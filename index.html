@@ -11,7 +11,7 @@
   <meta property="og:image" content="static/images/fig_bilevel_structure.png">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="description" content="Responsibility decomposition for constrained multi-agent RL. CoRL 2026.">
+  <meta name="description" content="Responsibility decomposition for constrained multi-agent RL.">
 
   <!-- Bulma CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
@@ -47,6 +47,7 @@
     </div>
     <div id="mainNav" class="navbar-menu">
       <div class="navbar-end">
+        <a class="navbar-item" href="#rho-animation">Demo</a>
         <a class="navbar-item" href="#abstract">Abstract</a>
         <a class="navbar-item" href="#method">Method</a>
         <a class="navbar-item" href="#results">Results</a>
@@ -65,7 +66,7 @@
         Learning Safety Burden Allocation<br>by Equilibrium Response
       </h1>
       <p class="publication-authors">Paper Authors</p>
-      <span class="publication-venue">CoRL 2026</span>
+      <span class="publication-venue">Preprint 2026</span>
 
       <div class="publication-links">
         <a class="button is-rounded is-medium external-link" href="#">
@@ -97,6 +98,30 @@
         through the Nash equilibrium of the inner constrained game, while policies (fast) and the shared
         constraint tightness $\lambda$ (medium) update on faster timescales.
       </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Dynamic Visualization ==================== -->
+<section class="section" style="padding-top:1rem; padding-bottom:1.5rem;">
+  <div class="container">
+    <h2 class="title is-3 section-title has-text-centered">How Does the Allocation Evolve?</h2>
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <video id="rho-animation" autoplay muted loop playsinline width="100%" style="border-radius:8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <source src="static/videos/rho_animation_HalfCheetah_6x1.mp4" type="video/mp4">
+        </video>
+        <noscript>
+          <img src="static/videos/rho_animation_HalfCheetah_6x1.gif" alt="Rho evolution animation" width="100%">
+        </noscript>
+        <p class="has-text-centered" style="margin-top:0.8rem; color:#555; font-size:0.95rem;">
+          <strong>Safety burden allocation during training on HalfCheetah 6&times;1.</strong>
+          Left: the learned responsibility vector $\rho$ — low-importance agents (small $\alpha$)
+          progressively absorb more safety burden, freeing high-value agents for locomotion.
+          Right: welfare (blue) and constraint cost (red) over training. Dashed lines mark the
+          analytical $\rho_i^\star \propto 1/\alpha_i$ prediction from the quadratic game.
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -332,11 +357,11 @@
       <button class="copy-btn" onclick="copyBibtex()" id="copyBtn">
         <i class="fas fa-copy"></i> Copy
       </button>
-      <pre class="bibtex-block" id="bibtexContent">@inproceedings{anonymous2026responsibility,
-  title     = {Learning Safety Burden Allocation by Equilibrium Response},
-  author    = {Anonymous},
-  booktitle = {Conference on Robot Learning (CoRL)},
-  year      = {2026}
+      <pre class="bibtex-block" id="bibtexContent">@article{anonymous2026responsibility,
+  title   = {Learning Safety Burden Allocation by Equilibrium Response},
+  author  = {Anonymous},
+  year    = {2026},
+  note    = {Preprint}
 }</pre>
     </div>
   </div>
