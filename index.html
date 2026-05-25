@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning Safety Burden Allocation by Equilibrium Response</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Learning Safety Burden Allocation by Equilibrium Response">
+  <meta property="og:description" content="Responsibility decomposition for constrained multi-agent RL: factoring the Lagrangian dual variable into shared tightness and per-agent responsibility to select welfare-optimal equilibria.">
+  <meta property="og:image" content="static/images/fig_bilevel_structure.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="description" content="Responsibility decomposition for constrained multi-agent RL. CoRL 2026.">
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- KaTeX for math -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body>
+
+<!-- ==================== Navbar ==================== -->
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="#" style="font-weight:700; color:#1a8a8a;">
+        Responsibility Decomposition
+      </a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="mainNav">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="mainNav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#abstract">Abstract</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#results">Results</a>
+        <a class="navbar-item" href="#analysis">Analysis</a>
+        <a class="navbar-item" href="#bibtex">BibTeX</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== Hero ==================== -->
+<section class="hero is-primary-custom" style="padding-top:4.5rem;">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="publication-title">
+        Learning Safety Burden Allocation<br>by Equilibrium Response
+      </h1>
+      <p class="publication-authors">Paper Authors</p>
+      <span class="publication-venue">CoRL 2026</span>
+
+      <div class="publication-links">
+        <a class="button is-rounded is-medium external-link" href="#">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span>
+          <span>Paper</span>
+        </a>
+        <a class="button is-rounded is-medium external-link" href="#">
+          <span class="icon"><i class="ai ai-arxiv"></i></span>
+          <span>arXiv</span>
+        </a>
+        <a class="button is-rounded is-medium external-link" href="https://github.com/XiaoyangCao1113/corl_respon_vector">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Code</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Teaser ==================== -->
+<section class="teaser-section">
+  <div class="container">
+    <div class="teaser-figure">
+      <img src="static/images/fig_bilevel_structure.png"
+           alt="Bilevel optimization structure: three timescales for policy, constraint tightness, and responsibility allocation">
+      <p class="teaser-caption">
+        <strong>Bilevel structure of responsibility decomposition.</strong>
+        The responsibility vector $\rho$ is updated on the slowest timescale via implicit differentiation
+        through the Nash equilibrium of the inner constrained game, while policies (fast) and the shared
+        constraint tightness $\lambda$ (medium) update on faster timescales.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Abstract ==================== -->
+<section id="abstract" class="section abstract-section">
+  <div class="container">
+    <h2 class="title is-3 section-title has-text-centered">Abstract</h2>
+    <p class="abstract-text">
+      When multiple robots share a safety constraint, someone must bear the cost of staying safe.
+      Existing constrained multi-agent RL methods distribute this burden equally &mdash; an allocation
+      that is suboptimal when agents differ in importance to team welfare. We propose
+      <strong>responsibility decomposition</strong>: factoring the Lagrangian dual variable into a
+      shared constraint-tightness scalar $\lambda$ and a per-agent responsibility vector
+      $\rho_\varphi(s)$ on the probability simplex. Because $\rho$ cancels from the aggregate
+      Lagrangian at any fixed policy, it cannot relax the constraint; yet it alters each agent's
+      stationarity conditions and thereby selects <em>which</em> equilibrium learning converges to.
+      We derive the implicit equilibrium-response gradient for updating $\rho$ by differentiating
+      welfare through the game equilibrium. On four benchmarks (Safe Multi-Agent MuJoCo HalfCheetah,
+      Humanoid, and ManySegmentSwimmer; a resource-harvesting domain) with $N{=}2$ to $6$ agents,
+      responsibility decomposition raises welfare by up to <strong>+38.9%</strong> with
+      <strong>2.2&times; lower variance</strong> and reduces constraint cost on Humanoid,
+      ManySegmentSwimmer, and Resource Harvest. The welfare gain is consistent with the Price of
+      Uniformity $\text{PoU} = \text{AM}(\alpha)/\text{HM}(\alpha)$, confirming that heterogeneous
+      teams benefit most from non-uniform allocation.
+    </p>
+  </div>
+</section>
+
+<!-- ==================== Method ==================== -->
+<section id="method" class="section method-section">
+  <div class="container">
+    <h2 class="title is-3 section-title">Key Insight</h2>
+    <div class="section-body">
+      <p>
+        Existing constrained MARL methods use a single Lagrangian multiplier $\lambda$ shared
+        identically across all agents. This implicitly imposes a <em>uniform</em> safety burden:
+        every agent sacrifices the same amount of reward to satisfy the joint constraint, regardless
+        of how important that agent is to team welfare. When agents are heterogeneous, uniform
+        allocation leaves welfare on the table.
+      </p>
+
+      <div class="equation-block mt-3 mb-3">
+        $$\lambda_i \;=\; N \cdot \lambda \cdot \rho_i(s), \qquad \rho \in \Delta^{N-1}$$
+      </div>
+
+      <p>
+        We decompose the per-agent multiplier into two factors: a shared
+        <strong>constraint-tightness</strong> scalar $\lambda$ and a per-agent
+        <strong>responsibility weight</strong> $\rho_i(s)$ that lives on the probability simplex.
+        Because the responsibility weights sum to one, the total constraint budget is unchanged &mdash;
+        $\rho$ cannot relax the safety constraint. What it <em>does</em> change is the gradient each
+        agent sees: high-importance agents receive a smaller safety penalty and focus on maximizing
+        reward, while low-importance agents absorb more of the safety cost.
+      </p>
+
+      <p class="mt-2">
+        The responsibility vector $\rho_\varphi(s)$ is learned end-to-end by differentiating team
+        welfare through the Nash equilibrium of the inner constrained game. This requires the
+        <strong>implicit equilibrium-response gradient</strong> &mdash; how the equilibrium policies
+        shift as $\rho$ changes &mdash; computed via implicit differentiation of the KKT conditions.
+      </p>
+    </div>
+
+    <h3 class="title is-5 has-text-centered mt-4" style="color: var(--text-primary);">Three-Timescale Optimization</h3>
+    <div class="timescale-list">
+      <div class="timescale-item">
+        <span class="timescale-badge fast">Fast</span>
+        <span class="timescale-text"><strong>Policy updates</strong> &mdash; each agent runs PPO against its current effective multiplier $\lambda_i = N \lambda \rho_i(s)$.</span>
+      </div>
+      <div class="timescale-item">
+        <span class="timescale-badge medium">Medium</span>
+        <span class="timescale-text"><strong>Constraint tightness $\lambda$</strong> &mdash; primal-dual ascent on the aggregate constraint violation.</span>
+      </div>
+      <div class="timescale-item">
+        <span class="timescale-badge slow">Slow</span>
+        <span class="timescale-text"><strong>Responsibility allocation $\rho_\varphi$</strong> &mdash; implicit gradient through the equilibrium to maximize team welfare.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Results ==================== -->
+<section id="results" class="section results-section">
+  <div class="container">
+    <h2 class="title is-3 section-title">Results</h2>
+
+    <!-- Main results table -->
+    <div class="results-table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>N</th>
+            <th>PoU</th>
+            <th>Baseline Welfare</th>
+            <th>Ours Welfare</th>
+            <th>Gain</th>
+            <th>Cost (Ours / BL)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HalfCheetah 6&times;1</td>
+            <td>6</td>
+            <td>1.43</td>
+            <td>5973 &plusmn; 2482</td>
+            <td class="best">8298 &plusmn; 1147</td>
+            <td class="best">+38.9%</td>
+            <td>0.41 / 0.26</td>
+          </tr>
+          <tr>
+            <td>Humanoid 9|8</td>
+            <td>2</td>
+            <td>1.33</td>
+            <td>12187 &plusmn; 132</td>
+            <td class="best">12868 &plusmn; 649</td>
+            <td class="best">+5.6%</td>
+            <td class="cost-better">1.63 / 1.89</td>
+          </tr>
+          <tr>
+            <td>ManySegmentSwimmer 6&times;1</td>
+            <td>6</td>
+            <td>1.95</td>
+            <td>&minus;266 &plusmn; 537</td>
+            <td class="best">650 &plusmn; 261</td>
+            <td class="best">massive</td>
+            <td class="cost-better">0.98 / 1.48</td>
+          </tr>
+          <tr>
+            <td>Resource Harvest</td>
+            <td>5</td>
+            <td>1.86</td>
+            <td>82 &plusmn; 30</td>
+            <td class="best">110 &plusmn; 26</td>
+            <td class="best">+34.7%</td>
+            <td class="cost-better">0.18 / 0.22</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Highlight box -->
+    <div class="highlight-box">
+      <div class="icon-col">&#9733;</div>
+      <div class="text-col">
+        <strong>ManySegmentSwimmer:</strong> Uniform allocation achieves <em>negative</em> welfare
+        (&minus;266). Our method is the <em>only</em> approach that achieves <strong>positive welfare</strong>
+        (650) <strong>AND</strong> the lowest constraint cost (0.98 vs 1.48). The highest PoU (1.95)
+        correctly predicts this is where non-uniform allocation helps most.
+      </div>
+    </div>
+
+    <!-- Learning curves -->
+    <div class="figure-container">
+      <img src="static/images/learning_curves.png"
+           alt="Learning curves: welfare vs training episode across all four benchmarks">
+      <p class="figure-caption">
+        <strong>Figure 2.</strong> Welfare during training across all four benchmarks. Responsibility decomposition
+        (blue) consistently reaches higher welfare with lower variance. The gap is largest on HalfCheetah and
+        ManySegmentSwimmer, where agent heterogeneity is highest (PoU &gt; 1.4).
+      </p>
+    </div>
+
+    <!-- Welfare-cost Pareto -->
+    <div class="figure-container">
+      <img src="static/images/welfare_cost_pareto.png"
+           alt="Welfare-cost Pareto frontiers across benchmarks">
+      <p class="figure-caption">
+        <strong>Figure 3.</strong> Welfare-cost tradeoff across benchmarks. Our method (colored markers)
+        achieves Pareto-dominant points &mdash; higher welfare at the same or lower constraint cost &mdash;
+        on Humanoid, ManySegmentSwimmer, and Resource Harvest.
+      </p>
+    </div>
+
+    <!-- Rho evolution -->
+    <div class="figure-container">
+      <img src="static/images/rho_evolution.png"
+           alt="Evolution of responsibility weights during training on Resource Harvest">
+      <p class="figure-caption">
+        <strong>Figure 4.</strong> Responsibility weights $\rho_i$ during training on Resource Harvest.
+        Agents with higher importance $\alpha_i$ converge to <em>lower</em> responsibility &mdash;
+        the inverse-importance pattern. The allocation stabilizes well before the end of training,
+        confirming the three-timescale separation.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Analysis ==================== -->
+<section id="analysis" class="section analysis-section">
+  <div class="container">
+    <h2 class="title is-3 section-title">Analysis</h2>
+
+    <div class="section-body mb-3">
+      <p>
+        Two theoretical predictions underpin the method. First, the optimal responsibility weight
+        for each agent should be inversely proportional to its importance weight $\alpha_i$. Second,
+        the welfare gain from non-uniform allocation should scale with the
+        <strong>Price of Uniformity</strong> $\text{PoU} = \text{AM}(\alpha)/\text{HM}(\alpha)$ &mdash;
+        the ratio of the arithmetic to harmonic mean of the importance weights.
+      </p>
+    </div>
+
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <img src="static/images/rho_vs_alpha.png"
+             alt="Learned rho vs agent importance alpha on log-log scale">
+        <p class="figure-caption">
+          <strong>Figure 5.</strong> Learned $\rho_i$ vs. importance $\alpha_i$ (log-log). The slope
+          is close to $-1$, confirming the inverse-importance prediction: more important agents bear
+          less safety burden.
+        </p>
+      </div>
+      <div class="analysis-card">
+        <img src="static/images/welfare_vs_pou.png"
+             alt="Welfare improvement vs Price of Uniformity">
+        <p class="figure-caption">
+          <strong>Figure 6.</strong> Welfare improvement vs. Price of Uniformity across benchmarks.
+          Higher PoU (more heterogeneous teams) yields larger gains, consistent with theory. The
+          correlation validates PoU as a diagnostic for when responsibility decomposition helps.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BibTeX ==================== -->
+<section id="bibtex" class="section bibtex-section">
+  <div class="container">
+    <h2 class="title is-3 section-title has-text-centered">BibTeX</h2>
+    <div class="bibtex-wrapper">
+      <button class="copy-btn" onclick="copyBibtex()" id="copyBtn">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+      <pre class="bibtex-block" id="bibtexContent">@inproceedings{anonymous2026responsibility,
+  title     = {Learning Safety Burden Allocation by Equilibrium Response},
+  author    = {Anonymous},
+  booktitle = {Conference on Robot Learning (CoRL)},
+  year      = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== Footer ==================== -->
+<footer class="footer-section">
+  <div class="container has-text-centered">
+    <p>
+      <a href="#">Paper</a> &nbsp;|&nbsp;
+      <a href="https://github.com/XiaoyangCao1113/corl_respon_vector">Code</a> &nbsp;|&nbsp;
+      <a href="#">arXiv</a>
+    </p>
+    <p class="mt-1">
+      This website template is adapted from
+      <a href="https://nerfies.github.io" target="_blank">Nerfies</a>,
+      licensed under
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+    </p>
+  </div>
+</footer>
+
+<!-- ==================== Scripts ==================== -->
+<script>
+// Mobile navbar toggle
+document.addEventListener('DOMContentLoaded', () => {
+  const burgers = document.querySelectorAll('.navbar-burger');
+  burgers.forEach(el => {
+    el.addEventListener('click', () => {
+      const target = document.getElementById(el.dataset.target);
+      el.classList.toggle('is-active');
+      target.classList.toggle('is-active');
+    });
+  });
+});
+
+// Copy BibTeX
+function copyBibtex() {
+  const text = document.getElementById('bibtexContent').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+    }, 2000);
+  });
+}
+
+// Smooth scroll offset for fixed navbar
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) {
+      const offset = 60;
+      const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+      // Close mobile menu if open
+      document.querySelectorAll('.navbar-burger, .navbar-menu').forEach(el => el.classList.remove('is-active'));
+    }
+  });
+});
+</script>
+
+</body>
+</html>
