@@ -126,6 +126,27 @@
   </div>
 </section>
 
+<!-- ==================== Simulation Video ==================== -->
+<section class="section" style="padding-top:1rem; padding-bottom:1.5rem;">
+  <div class="container">
+    <h2 class="title is-3 section-title has-text-centered">Learned Policy in Action</h2>
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <video autoplay muted loop playsinline width="100%" style="border-radius:8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <source src="static/videos/hc6x1_simulation.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <p class="has-text-centered" style="margin-top:0.8rem; color:#555; font-size:0.95rem;">
+          <strong>HalfCheetah 6&times;1 with learned safety burden allocation.</strong>
+          Six agents each control one joint. The learned $\rho$ frees high-importance
+          joints from safety duty, enabling faster locomotion while low-importance joints
+          absorb the constraint penalty. Overlay shows the per-agent $\rho_i$ values.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ==================== Abstract ==================== -->
 <section id="abstract" class="section abstract-section">
   <div class="container">
